@@ -15,7 +15,12 @@ app.get("/", (req, res) => {
 
 app.get("/pair", async (req, res) => {
   try {
-    const { state, saveCreds } = await useMultiFileAuthState("./auth_info");
+    const folderPath = "./auth_info";
+    if (!fs.existsSync(folderPath)) {
+      fs.mkdirSync(folderPath);
+    }
+
+    const { state, saveCreds } = await useMultiFileAuthState(folderPath);
     const sock = makeWASocket({
       printQRInTerminal: true,
       auth: state
@@ -30,7 +35,7 @@ app.get("/pair", async (req, res) => {
           res.send(`
             <h2>📱 Scan this QR in WhatsApp</h2>
             <img src="${url}" style="width:300px; height:300px;" />
-            <p>Open WhatsApp → Linked Devices → Scan QR</p>
+            <p>👉 Open WhatsApp → Linked Devices → Scan QR</p>
           `);
         });
       }
